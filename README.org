@@ -22,6 +22,7 @@
     ~bruh-chromium-new-app~ (requires chrome or chromium)
 
     ~bruh-feh~
+
     ~bruh-mpv~
 
 *** browse-url-browser-function generators
@@ -36,7 +37,10 @@
    NB: these should be set up before calling generators
 
    ~bruh-images-re~ - a list of regular expressions for image URLs
+
    ~bruh-images-browser-function~ - a browse-url-compatible function to open image URLs
 
+
    ~bruh-videos-re~ - a list of regular expressions for video URLs
+
    ~bruh-videos-browser-function~ - a browse-url-compatible function to open video URLs
