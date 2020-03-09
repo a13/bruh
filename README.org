@@ -1,5 +1,9 @@
 * BRowse Url Helpers
 
+This package provide some helper functions and customs which allow you to open image and video URLs (using regexp-based matching) in external applications, while still having possibility to fallback to defaults.
+
+You can achieve the same functionality by customizing ~browse-url-browser-function~ to a list of ~(REGEXP . FUNCTION)~ elements (see its docstring), but it requires more manual work, which I personally don't like. So that's how this package was born.
+
 ** Installation
    The minimal one. Installs package and sets ~browse-url-browser-function~ as a wrapper to ~browse-url~
    #+BEGIN_SRC emacs-lisp
@@ -55,7 +59,8 @@
    ~bruh-mpv~ - uses mpv+youtube-dl to browse video URLs. Check if they are present in your system and work from terminal.
 
    ~bruh-browse-url~ - try to find suitable function to open URL argument
-   The order is
+
+   The search order is
    - URL matches some of the ~bruh-videos-re~ - ~bruh-videos-browser-function~
    - URL matches some of the ~bruh-images-re~ - ~bruh-images-browser-function~
    - ~bruh-default-browser~
