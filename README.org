@@ -1,11 +1,11 @@
 * BRowse Url Helpers
 
-This package provide some helper functions and customs which allow you to open image and video URLs (using regexp-based matching) in external applications, while still having possibility to fallback to defaults.
+This package provides some helper functions and customs that allow you to open image and video URLs (using regexp-based matching) in external applications, while still having the possibility to fall back to defaults.
 
 You can achieve the same functionality by customizing ~browse-url-browser-function~ to a list of ~(REGEXP . FUNCTION)~ elements (see its docstring), but it requires more manual work, which I personally don't like. So that's how this package was born.
 
 ** Installation
-   The minimal one. Installs package and sets ~browse-url-browser-function~ as a wrapper to ~browse-url~
+   The minimal one. Installs package and sets ~browse-url-browser-function~ to use the wrapper
    #+BEGIN_SRC emacs-lisp
      (use-package bruh
        :after browse-url
@@ -15,7 +15,7 @@ You can achieve the same functionality by customizing ~browse-url-browser-functi
        (browse-url-browser-function #'bruh-browse-url))
    #+END_SRC
 
-   More advanced (NB /:custom/ keyword requires [[https://github.com/a13/use-package-custom-update][:custom-update]] package)
+   More advanced one (NB /:custom-update/ keyword requires [[https://github.com/a13/use-package-custom-update][use-package-custom-update]] package)
    #+BEGIN_SRC emacs-lisp
      (use-package bruh
        :after browse-url
@@ -44,19 +44,19 @@ You can achieve the same functionality by customizing ~browse-url-browser-functi
 
     ~bruh-images-re~ - a list of regular expressions for image URLs
 
-    ~bruh-images-browser-function~ - a browse-url-compatible function to open image URLs, the default is ~eww-browse-url~, but you can use ~bruh-feh~ instead. Set to /nil/ if you want to open images in default browser.
+    ~bruh-images-browser-function~ - a browse-url-compatible function to open image URLs, the default is ~eww-browse-url~, but you can use ~bruh-feh~ instead. Set to /nil/ if you want to open images in the default browser.
 
 *** Videos
     ~bruh-videos-re~ - a list of regular expressions for video URLs
 
-    ~bruh-videos-browser-function~ - a browse-url-compatible function to open video URLs, the default is ~bruh-mpv~. Set to /nil/ if you want to open videos in default browser.
+    ~bruh-videos-browser-function~ - a browse-url-compatible function to open video URLs, the default is ~bruh-mpv~. Set to /nil/ if you want to open videos in the default browser.
 
 ** Interactive commands
    ~bruh-chromium-new-app~ (requires chrome or chromium)
 
    ~bruh-feh~ uses feh to browse image URLs.
 
-   ~bruh-mpv~ - uses mpv+youtube-dl to browse video URLs. Check if they are present in your system and work from terminal.
+   ~bruh-mpv~ uses mpv+youtube-dl to browse video URLs. Check if they are present in your system and work from the terminal.
 
    ~bruh-browse-url~ - try to find suitable function to open URL argument
 
