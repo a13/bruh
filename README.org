@@ -1,46 +1,62 @@
 * BRowse Url Helpers
 
 ** Installation
-
+   The minimal one. Installs package and sets ~browse-url-browser-function~ as a wrapper to ~browse-url~
    #+BEGIN_SRC emacs-lisp
      (use-package bruh
+       :after browse-url
        :quelpa
        (bruh :repo "a13/bruh" :fetcher github)
        :custom
-       (bruh-videos-browser-function #'bruh-mpv)
-       (bruh-images-browser-function #'eww-browse)
-       (browse-url-browser-function
-        (append
-         (bruh-videos-re-alist)
-         (bruh-images-re-alist)
-         '(("." . bruh-chromium-new-app)))))
+       (browse-url-browser-function #'bruh-browse-url))
    #+END_SRC
 
-** Usage
-
-*** Interactive commands
-    ~bruh-chromium-new-app~ (requires chrome or chromium)
-
-    ~bruh-feh~
-
-    ~bruh-mpv~
-
-*** browse-url-browser-function generators
-    #+BEGIN_SRC emacs-lisp
-      (bruh-videos-re-alist)
-      (bruh-images-re-alist)
-    #+END_SRC
-
-
+   More advanced (NB /:custom/ keyword requires [[https://github.com/a13/use-package-custom-update][:custom-update]] package)
+   #+BEGIN_SRC emacs-lisp
+     (use-package bruh
+       :after browse-url
+       :quelpa
+       (bruh :repo "a13/bruh" :fetcher github)
+       :custom-update
+       (bruh-images-re
+        '("^https?://img-fotki\\.yandex\\.ru/get/"
+          "^https?://pics\\.livejournal\\.com/.*/pic/"
+          "^https?://l-userpic\\.livejournal\\.com/"
+          "^https?://img\\.leprosorium\\.com/[0-9]+$"))
+       :custom
+       (browse-url-browser-function #'bruh-browse-url)
+       (bruh-default-browser #'bruh-chromium-new-app)
+       (bruh-videos-browser-function #'bruh-mpv))
+   #+END_SRC
 
 ** Customizations
-   NB: these should be set up before calling generators
 
-   ~bruh-images-re~ - a list of regular expressions for image URLs
+*** Base configuration
+    ~browse-url-browser-function~ set to ~bruh-browse-url~ if you want to use the wrapper
 
-   ~bruh-images-browser-function~ - a browse-url-compatible function to open image URLs
+    ~bruh-default-browser~ use if no images or videos were detected. Set to /nil/ if you want to ignore it.
 
+*** Images
 
-   ~bruh-videos-re~ - a list of regular expressions for video URLs
+    ~bruh-images-re~ - a list of regular expressions for image URLs
 
-   ~bruh-videos-browser-function~ - a browse-url-compatible function to open video URLs
+    ~bruh-images-browser-function~ - a browse-url-compatible function to open image URLs, the default is ~eww-browse-url~, but you can use ~bruh-feh~ instead. Set to /nil/ if you want to open images in default browser.
+
+*** Videos
+    ~bruh-videos-re~ - a list of regular expressions for video URLs
+
+    ~bruh-videos-browser-function~ - a browse-url-compatible function to open video URLs, the default is ~bruh-mpv~. Set to /nil/ if you want to open videos in default browser.
+
+** Interactive commands
+   ~bruh-chromium-new-app~ (requires chrome or chromium)
+
+   ~bruh-feh~ uses feh to browse image URLs.
+
+   ~bruh-mpv~ - uses mpv+youtube-dl to browse video URLs. Check if they are present in your system and work from terminal.
+
+   ~bruh-browse-url~ - try to find suitable function to open URL argument
+   The order is
+   - URL matches some of the ~bruh-videos-re~ - ~bruh-videos-browser-function~
+   - URL matches some of the ~bruh-images-re~ - ~bruh-images-browser-function~
+   - ~bruh-default-browser~
+   - ~browse-url-default-browser~

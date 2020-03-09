@@ -1,7 +1,7 @@
 ;;; bruh.el --- BRowseUrlHelpers                     -*- lexical-binding: t; -*-
 
 ;; Homepage: https://github.com/a13/bruh
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Package-Requires: ((emacs "25.1"))
 
 ;; Author: Dmitry K. @a13
@@ -27,6 +27,7 @@
 ;;; Code:
 
 (require 'browse-url)
+(require 'cl-lib)
 
 (defgroup bruh nil
   "Extensions for browser-url"
@@ -69,11 +70,17 @@ The optional argument NEW-WINDOW is not used."
     (start-process (concat "mpv " url) nil "mpv" "--loop-file=inf" url)))
 
 
+(defcustom bruh-default-browser
+  nil
+  "Default function to display URL."
+  :type 'function
+  :group 'bruh)
 
 (defcustom bruh-images-re
-  '("\\.\\(jpe?g\\|png\\)\\(:large\\|:orig\\)?\\(\\?.*\\)?$")
+  '("\\.\\(jpe?g\\|png\\)\\(:large\\|:orig\\)?\\(\\?.*\\)?$"
+    "https?://pbs\\.twimg.com/media/")
   "Image URLs regular expressions list."
-  :type (repeat 'string)
+  :type '(repeat regexp)
   :group 'bruh)
 
 (defcustom bruh-images-browser-function #'eww-browse-url
@@ -82,21 +89,12 @@ Set it to nil if you don't want to open images separately."
   :type 'function
   :group 'bruh)
 
-(defun bruh-images-re-alist ()
-  "Generate images browsing part for `browse-url-browser-function'."
-  (if bruh-images-browser-function
-      (mapcar (lambda (re)
-                (cons re bruh-images-browser-function))
-              bruh-images-re)
-    nil))
-
-
 (defcustom bruh-videos-re
   '("\\.\\(gifv?\\|avi\\|AVI\\|mp[4g]\\|MP4\\|webm\\)$"
     "^https?://\\(www\\.youtube\\.com\\|youtu\\.be\\|coub\\.com\\|vimeo\\.com\\|www\\.liveleak\\.com\\)/"
     "^https?://www\\.facebook\\.com/.*/videos?/")
   "Image URLs regular expressions list."
-  :type (repeat 'string)
+  :type '(repeat regexp)
   :group 'bruh)
 
 (defcustom bruh-videos-browser-function #'bruh-mpv
@@ -105,13 +103,26 @@ Set it to nil if you don't want to open images separately."
   :type 'function
   :group 'bruh)
 
-(defun bruh-videos-re-alist ()
-  "Generate videos browsing part for `browse-url-browser-function'."
-  (if bruh-videos-browser-function
-      (mapcar (lambda (re)
-                (cons re bruh-videos-browser-function))
-              bruh-videos-re)
-    nil))
+(defun bruh--some-re (url re-list)
+  "Check if URL matches any element in RE-LIST."
+  (let ((case-fold-search t))
+    (cl-some (lambda (re)
+               (string-match-p re url))
+             re-list)))
+
+
+;;;###autoload
+(defun bruh-browse-url (url &rest args)
+  "Browse URL using bruh wrappers.  ARGS go directly to the browser."
+  (interactive (browse-url-interactive-arg "URL: "))
+  (let ((function (or (and (bruh--some-re url bruh-videos-re)
+                           bruh-videos-browser-function)
+                      (and (bruh--some-re url bruh-images-re)
+                           bruh-images-browser-function)
+                      bruh-default-browser
+                      #'browse-url-default-browser)))
+    (apply function url args)))
+
 
 
 
